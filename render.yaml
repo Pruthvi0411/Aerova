@@ -1,8 +1,9 @@
 services:
   - type: web
-    name: aerova-pro-triage
-    env: python
-    buildCommand: pip install -r requirements.txt
+    name: aerova-pro
+    runtime: python
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
     startCommand: python app.py
     envVars:
       - key: PYTHON_VERSION

@@ -725,10 +725,21 @@ with gr.Blocks(title="AEROVA PRO | AI Respiratory Triage & Robot Copilot") as de
     chip_reports.click(fn=lambda h, k: handle_chip("reports", h, k), inputs=[chatbot_display, gemini_key_state], outputs=[chatbot_display, chat_msg_box], api_name="lambda_4")
 
 if __name__ == "__main__":
+    import os
+    import sys
+
+    # Render, Railway, Hugging Face Spaces, and Docker dynamically set PORT
+    port = int(os.environ.get("PORT", os.environ.get("GRADIO_SERVER_PORT", 7860)))
+    
+    # Check if --share CLI argument is provided or GRADIO_SHARE environment variable is set
+    enable_share = "--share" in sys.argv or os.environ.get("GRADIO_SHARE", "false").lower() in ("true", "1", "yes")
+
+    print(f"Starting AEROVA PRO server on port {port} (share={enable_share})...")
+
     demo.launch(
         server_name="0.0.0.0",
-        server_port=7860,
-        share=False,
+        server_port=port,
+        share=enable_share,
         theme="base",
         css=CUSTOM_CSS,
         head=JS_HEADER
