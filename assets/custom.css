@@ -479,14 +479,16 @@ input:focus, textarea:focus, select:focus {
   right: 22px;
   bottom: 22px;
   z-index: 1000;
-  width: min(400px, calc(100vw - 36px));
+  width: min(420px, calc(100vw - 36px));
+  max-height: calc(100vh - 44px) !important;
   margin: 0 !important;
   background: rgba(6, 18, 28, 0.98) !important;
   border: 1px solid var(--primary) !important;
   border-radius: 24px !important;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 20px var(--primary-glow) !important;
   backdrop-filter: blur(14px);
-  overflow: hidden;
+  overflow: hidden !important;
+  overscroll-behavior: contain !important;
 }
 
 .robot-header {
@@ -638,20 +640,92 @@ input:focus, textarea:focus, select:focus {
   margin-top: 4px;
 }
 
-/* Chatbot container adjustments */
-.robot-dock .chatbot {
-  background: transparent !important;
-  border: none !important;
+/* =========================================================================
+   ROBOT CHATBOT COMPONENT & SCROLLING ENGINE
+   ========================================================================= */
+#aerova-robot-chatbot.block,
+.robot-dock .robot-chatbot.block {
+  background: rgba(8, 22, 34, 0.7) !important;
+  border: 1px solid rgba(56, 189, 248, 0.25) !important;
+  border-radius: 16px !important;
+  height: 320px !important;
+  min-height: 250px !important;
+  max-height: 350px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  overflow: hidden !important;
+  padding: 0 !important;
 }
 
-.robot-dock .message {
+#aerova-robot-chatbot .wrapper {
+  height: 100% !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  flex-grow: 1 !important;
+  position: relative !important;
+}
+
+/* Chatbot inner scrollable message list - ONLY container with overflow-y: auto */
+#aerova-robot-chatbot .bubble-wrap,
+#aerova-robot-chatbot .panel-wrap,
+.robot-dock [data-testid="bubble-wrap"] {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  height: 100% !important;
+  flex: 1 1 auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+  padding: 24px 12px 10px !important;
+  position: relative !important;
+}
+
+/* Message list wrap expands naturally to full content height */
+#aerova-robot-chatbot .message-wrap {
+  height: auto !important;
+  min-height: 100% !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  margin-bottom: 8px !important;
+}
+
+/* Individual message rows */
+#aerova-robot-chatbot .message-row {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: flex !important;
+  position: relative !important;
+}
+
+#aerova-robot-chatbot .message {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
   border-radius: 14px !important;
   padding: 10px 14px !important;
   font-size: 13px !important;
   line-height: 1.5 !important;
+  user-select: text !important;
+  pointer-events: auto !important;
+}
+
+#aerova-robot-chatbot .message-content,
+#aerova-robot-chatbot .prose {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block !important;
 }
 
 /* User message bubble */
+#aerova-robot-chatbot .user.message,
 .robot-dock .message.user {
   background: rgba(2, 132, 199, 0.35) !important;
   border: 1px solid var(--cyan-accent) !important;
@@ -659,11 +733,48 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* Bot message bubble */
+#aerova-robot-chatbot .bot.message,
 .robot-dock .message.bot {
   background: rgba(13, 33, 49, 0.95) !important;
   border: 1px solid rgba(0, 229, 176, 0.35) !important;
   border-left: 3px solid var(--primary) !important;
   color: #f8fafc !important;
+}
+
+/* Scrollbar styles for robot dock and chatbot */
+#aerova-robot-chatbot .bubble-wrap,
+#aerova-robot-chatbot .panel-wrap,
+.robot-dock * {
+  scrollbar-width: thin !important;
+  scrollbar-color: var(--primary) rgba(11, 31, 46, 0.8) !important;
+}
+
+#aerova-robot-chatbot .bubble-wrap::-webkit-scrollbar,
+#aerova-robot-chatbot .panel-wrap::-webkit-scrollbar,
+.robot-dock ::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+
+#aerova-robot-chatbot .bubble-wrap::-webkit-scrollbar-track,
+#aerova-robot-chatbot .panel-wrap::-webkit-scrollbar-track,
+.robot-dock ::-webkit-scrollbar-track {
+  background: rgba(11, 31, 46, 0.6) !important;
+  border-radius: 6px !important;
+}
+
+#aerova-robot-chatbot .bubble-wrap::-webkit-scrollbar-thumb,
+#aerova-robot-chatbot .panel-wrap::-webkit-scrollbar-thumb,
+.robot-dock ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--cyan-accent) 0%, var(--primary) 100%) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 0 6px var(--primary-glow) !important;
+}
+
+#aerova-robot-chatbot .bubble-wrap::-webkit-scrollbar-thumb:hover,
+#aerova-robot-chatbot .panel-wrap::-webkit-scrollbar-thumb:hover,
+.robot-dock ::-webkit-scrollbar-thumb:hover {
+  background: #00e5b0 !important;
 }
 
 /* =========================================================================

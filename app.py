@@ -69,6 +69,39 @@ window.sendPdfToWhatsApp = async function(patientId, phone, pdfDataUri) {
 
   window.open(waUrl, '_blank');
 };
+
+// Ensure chatbot message container wheel scrolling and autoscroll work properly
+document.addEventListener('DOMContentLoaded', function() {
+  function bindChatScroll() {
+    var chat = document.querySelector('#aerova-robot-chatbot, .robot-chatbot');
+    if (!chat) return;
+    var bubbleWrap = chat.querySelector('.bubble-wrap, .panel-wrap, [data-testid="bubble-wrap"]');
+    if (!bubbleWrap) return;
+
+    bubbleWrap.style.overflowY = 'auto';
+    bubbleWrap.style.webkitOverflowScrolling = 'touch';
+    bubbleWrap.style.overscrollBehavior = 'contain';
+
+    var messageWrap = chat.querySelector('.message-wrap');
+    if (messageWrap) {
+      messageWrap.style.overflow = 'visible';
+      messageWrap.style.height = 'auto';
+      messageWrap.style.maxHeight = 'none';
+    }
+
+    if (!chat.dataset.scrollBound) {
+      chat.dataset.scrollBound = 'true';
+      chat.addEventListener('wheel', function(e) {
+        if (bubbleWrap.scrollHeight > bubbleWrap.clientHeight) {
+          bubbleWrap.scrollTop += e.deltaY;
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }, { passive: false });
+    }
+  }
+  setInterval(bindChatScroll, 500);
+});
 </script>
 """
 
@@ -335,7 +368,16 @@ with gr.Blocks(title="AEROVA PRO | AI Respiratory Triage & Robot Copilot") as de
                 chip_meaning = gr.Button("🩺 Result Meaning", elem_classes=["robot-chip"])
                 chip_reports = gr.Button("📄 PDF Reports", elem_classes=["robot-chip"])
 
-            chatbot_display = gr.Chatbot(label="AEROVA Robot Chat", value=[])
+            chatbot_display = gr.Chatbot(
+                label="AEROVA Robot Chat",
+                value=[],
+                height=300,
+                min_height=200,
+                max_height=350,
+                autoscroll=True,
+                elem_id="aerova-robot-chatbot",
+                elem_classes=["robot-chatbot"]
+            )
             with gr.Row():
                 chat_msg_box = gr.Textbox(label="Message Robot", placeholder="Ask about cough features, audio quality, model confidences...")
                 chat_ask_btn = gr.Button("Ask Robot", variant="primary", elem_classes=["primary-button"])
